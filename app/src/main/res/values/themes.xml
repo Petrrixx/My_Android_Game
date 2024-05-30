@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="Theme.TowerDefense_seminar_Bolecek_Peter_5ZYI24" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.TowerDefense_seminar_Bolecek_Peter_5ZYI24" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+    </style>
 </resources>
+
+
