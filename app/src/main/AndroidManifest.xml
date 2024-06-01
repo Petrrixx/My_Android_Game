@@ -13,14 +13,14 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.TowerDefense_seminar_Bolecek_Peter_5ZYI24"
+        android:theme="@style/AppTheme"
         tools:targetApi="31">
 
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.TowerDefense_seminar_Bolecek_Peter_5ZYI24">
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -30,20 +30,20 @@
         <activity
             android:name=".GameActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.TowerDefense_seminar_Bolecek_Peter_5ZYI24" />
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name=".OptionsActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.TowerDefense_seminar_Bolecek_Peter_5ZYI24" />
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name=".MenuActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.TowerDefense_seminar_Bolecek_Peter_5ZYI24" />
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.NoActionBar" />
 
     </application>
 </manifest>

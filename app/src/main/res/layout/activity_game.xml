@@ -53,11 +53,19 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/return_button"
+        android:id="@+id/menu_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Return"
+        android:text="Menu"
         android:layout_gravity="top|end"
         android:padding="8dp"
         android:layout_margin="16dp" />
+
+    <com.example.towerdefense_seminar_bolecek_peter_5zyi24.Joystick
+        android:id="@+id/joystick"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="bottom|left"
+        android:layout_margin="16dp"
+        android:visibility="gone"/>
 </FrameLayout>

@@ -6,6 +6,9 @@ import android.opengl.GLES20
 import android.opengl.GLUtils
 
 object TextureUtils {
+    // Asi nie je treba vďaka enum triede EnemyType, ktorá rieši tento fix duplicity ešte lepšie,
+    // išlo o load textúry pre Enemy a Player, ale obi dve triedy majú rozdielné riešenia už.
+    // Nechám ju tu pre obhajobu práce z bitmapami a spracovaním meshov a pre future referenciu - možno použijem ešte
     fun loadTexture(context: Context, resourceId: Int): Int {
         val textureHandle = IntArray(1)
         GLES20.glGenTextures(1, textureHandle, 0)

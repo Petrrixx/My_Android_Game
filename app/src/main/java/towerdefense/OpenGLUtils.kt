@@ -3,7 +3,9 @@ package com.example.towerdefense_seminar_bolecek_peter_5zyi24
 import android.opengl.GLES20
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.nio.FloatBuffer
 
+// pomocný objekt pre rendrovací engine
 object OpenGLUtils {
     private const val vertexShaderCode =
         "uniform mat4 uMVPMatrix;" +
@@ -72,5 +74,12 @@ object OpenGLUtils {
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, buffers[0])
         GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, buffer.capacity() * 4, buffer, GLES20.GL_STATIC_DRAW)
         return buffers[0]
+    }
+
+    fun createFloatBuffer(data: FloatArray): FloatBuffer {
+        return ByteBuffer.allocateDirect(data.size * 4).order(ByteOrder.nativeOrder()).asFloatBuffer().apply {
+            put(data)
+            position(0)
+        }
     }
 }

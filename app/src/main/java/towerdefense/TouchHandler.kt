@@ -2,7 +2,9 @@ package com.example.towerdefense_seminar_bolecek_peter_5zyi24
 
 import android.view.MotionEvent
 import android.view.View
-class TouchHandler(private val renderer: GLRenderer) : View.OnTouchListener {
+
+// Je to presne to, ako sa tá trieda volá
+class TouchHandler(private val renderer: OpenGLRenderer) : View.OnTouchListener {
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
         if (event != null) {
             when (event.action) {
