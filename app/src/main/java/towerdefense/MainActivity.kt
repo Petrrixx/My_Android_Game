@@ -2,46 +2,29 @@ package com.example.towerdefense_seminar_bolecek_peter_5zyi24
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.material3.MaterialTheme
 
-class MainActivity : AppCompatActivity() {
-
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        hideSystemUI()
-
-        val startButton: Button = findViewById(R.id.start_button)
-        val settingsButton: Button = findViewById(R.id.settings_button)
-        val exitButton: Button = findViewById(R.id.exit_button)
-
-        startButton.setOnClickListener {
-            val intent = Intent(this, GameActivity::class.java)
-            startActivity(intent)
+        setContent {
+            MaterialTheme {
+                MainScreen(
+                    onStartClick = {
+                        val intent = Intent(this, GameActivity::class.java)
+                        startActivity(intent)
+                    },
+                    onSettingsClick = {
+                        val intent = Intent(this, OptionsActivity::class.java)
+                        startActivity(intent)
+                    },
+                    onExitClick = {
+                        finishAffinity()
+                    }
+                )
+            }
         }
-
-        settingsButton.setOnClickListener {
-            val intent = Intent(this, OptionsActivity::class.java)
-            startActivity(intent)
-        }
-
-        exitButton.setOnClickListener {
-            finish()
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        hideSystemUI()
-    }
-
-    private fun hideSystemUI() {
-        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
-        actionBar?.hide()
     }
 }

@@ -5,35 +5,30 @@ import android.opengl.GLES20
 import android.opengl.GLUtils
 import android.graphics.BitmapFactory
 import java.nio.FloatBuffer
-import javax.microedition.khronos.opengles.GL10
 
-class Enemy(private var x: Float, private var y: Float, private val type: EnemyType) {
+class Enemy(var x: Float, var y: Float, private val type: EnemyType) {
     private var textureIds = IntArray(type.resourceIds.size)
     private var currentFrame = 0
     private val frameCount = type.resourceIds.size
     private var frameTime = 0L
-    private val frameDuration = 100L // milisekundy za frame
-    private val moveSpeed = 0.01f // Pohybová rýchlosť nepriateľa
+    private val frameDuration = 100L
+    private val moveSpeed = 0.01f
 
-    //buffere sú podľa YT tutorialu
-    // Vertex data
     private val vertexBuffer: FloatBuffer = OpenGLUtils.createFloatBuffer(floatArrayOf(
-        -0.1f,  0.1f, 0.0f,  // Top-left
-        -0.1f, -0.1f, 0.0f,  // Bottom-left
-        0.1f, -0.1f, 0.0f,  // Bottom-right
-        0.1f,  0.1f, 0.0f   // Top-right
+        -0.1f,  0.1f, 0.0f,
+        -0.1f, -0.1f, 0.0f,
+        0.1f, -0.1f, 0.0f,
+        0.1f,  0.1f, 0.0f
     ))
 
-    // Texture coordinate data
     private val texCoordBuffer: FloatBuffer = OpenGLUtils.createFloatBuffer(floatArrayOf(
-        0.0f, 0.0f,  // Top-left
-        0.0f, 1.0f,  // Bottom-left
-        1.0f, 1.0f,  // Bottom-right
-        1.0f, 0.0f   // Top-right
+        0.0f, 0.0f,
+        0.0f, 1.0f,
+        1.0f, 1.0f,
+        1.0f, 0.0f
     ))
 
     fun loadTextures(context: Context) {
-        //popis a postup spracovania textúr je v objekte TextureUtils
         GLES20.glGenTextures(textureIds.size, textureIds, 0)
         for (i in textureIds.indices) {
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureIds[i])
@@ -50,40 +45,38 @@ class Enemy(private var x: Float, private var y: Float, private val type: EnemyT
         }
     }
 
-    fun draw(gl: GL10?) {
+    fun draw(program: Int, mvpMatrix: FloatArray) {
+        GLES20.glUseProgram(program)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureIds[currentFrame])
 
-        GLES20.glEnableVertexAttribArray(0)
-        GLES20.glVertexAttribPointer(0, 3, GLES20.GL_FLOAT, false, 0, vertexBuffer)
+        val positionHandle = GLES20.glGetAttribLocation(program, "vPosition")
+        val texCoordHandle = GLES20.glGetAttribLocation(program, "aTexCoord")
+        val mvpMatrixHandle = GLES20.glGetUniformLocation(program, "uMVPMatrix")
 
-        GLES20.glEnableVertexAttribArray(1)
-        GLES20.glVertexAttribPointer(1, 2, GLES20.GL_FLOAT, false, 0, texCoordBuffer)
+        GLES20.glEnableVertexAttribArray(positionHandle)
+        GLES20.glVertexAttribPointer(positionHandle, 3, GLES20.GL_FLOAT, false, 0, vertexBuffer)
+
+        GLES20.glEnableVertexAttribArray(texCoordHandle)
+        GLES20.glVertexAttribPointer(texCoordHandle, 2, GLES20.GL_FLOAT, false, 0, texCoordBuffer)
+
+        GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0)
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, 4)
 
-        GLES20.glDisableVertexAttribArray(0)
-        GLES20.glDisableVertexAttribArray(1)
+        GLES20.glDisableVertexAttribArray(positionHandle)
+        GLES20.glDisableVertexAttribArray(texCoordHandle)
     }
 
-    private fun updateFrame() {
+    fun update() {
         val currentTime = System.currentTimeMillis()
         if (currentTime - frameTime >= frameDuration) {
             currentFrame = (currentFrame + 1) % frameCount
             frameTime = currentTime
         }
-    }
-
-    fun update() {
-        x -= moveSpeed // pohyb vľavo
-        updateFrame()
+        x -= moveSpeed
     }
 
     fun isOutOfBound(): Boolean {
         return x < -1.0f
-    }
-
-    fun release() {
-        // Uvoľnenie OpenGL zdrojov, keď sa nepriateľ odstráni
-        GLES20.glDeleteTextures(textureIds.size, textureIds, 0)
     }
 }

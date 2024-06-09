@@ -4,33 +4,30 @@ import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLUtils
 import android.graphics.BitmapFactory
+import android.opengl.Matrix
 import java.nio.FloatBuffer
-import javax.microedition.khronos.opengles.GL10
 
-class Player(private var x: Float, private var y: Float) {
-    private var textureIds = IntArray(3) // 3 textury / frame
+
+class Player(var x: Float, var y: Float) {
+    private var textureIds = IntArray(3)
     private var currentFrame = 0
     private val frameCount = 3
     private var frameTime = 0L
-    private val frameDuration = 100L // milliseconds/frame
-    private var screenWidth = 0
-    private var screenHeight = 0
+    private val frameDuration = 100L
     private val moveSpeed = 0.02f
 
-    // Vertex data
     private val vertexBuffer: FloatBuffer = OpenGLUtils.createFloatBuffer(floatArrayOf(
-        -0.1f,  0.1f, 0.0f,  // Top-left
-        -0.1f, -0.1f, 0.0f,  // Bottom-left
-        0.1f, -0.1f, 0.0f,  // Bottom-right
-        0.1f,  0.1f, 0.0f   // Top-right
+        -0.1f,  0.1f, 0.0f,
+        -0.1f, -0.1f, 0.0f,
+        0.1f, -0.1f, 0.0f,
+        0.1f,  0.1f, 0.0f
     ))
 
-    // Texture coordinate data
     private val texCoordBuffer: FloatBuffer = OpenGLUtils.createFloatBuffer(floatArrayOf(
-        0.0f, 0.0f,  // Top-left
-        0.0f, 1.0f,  // Bottom-left
-        1.0f, 1.0f,  // Bottom-right
-        1.0f, 0.0f   // Top-right
+        0.0f, 0.0f,
+        0.0f, 1.0f,
+        1.0f, 1.0f,
+        1.0f, 0.0f
     ))
 
     fun loadTextures(context: Context) {
@@ -56,52 +53,33 @@ class Player(private var x: Float, private var y: Float) {
         }
     }
 
-    fun draw(gl: GL10?) {
+    fun draw(program: Int, mvpMatrix: FloatArray) {
+        GLES20.glUseProgram(program)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureIds[currentFrame])
 
-        GLES20.glEnableVertexAttribArray(0)
-        GLES20.glVertexAttribPointer(0, 3, GLES20.GL_FLOAT, false, 0, vertexBuffer)
+        val positionHandle = GLES20.glGetAttribLocation(program, "vPosition")
+        val texCoordHandle = GLES20.glGetAttribLocation(program, "aTexCoord")
+        val mvpMatrixHandle = GLES20.glGetUniformLocation(program, "uMVPMatrix")
 
-        GLES20.glEnableVertexAttribArray(1)
-        GLES20.glVertexAttribPointer(1, 2, GLES20.GL_FLOAT, false, 0, texCoordBuffer)
+        GLES20.glEnableVertexAttribArray(positionHandle)
+        GLES20.glVertexAttribPointer(positionHandle, 3, GLES20.GL_FLOAT, false, 0, vertexBuffer)
+
+        GLES20.glEnableVertexAttribArray(texCoordHandle)
+        GLES20.glVertexAttribPointer(texCoordHandle, 2, GLES20.GL_FLOAT, false, 0, texCoordBuffer)
+
+        GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0)
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, 4)
 
-        GLES20.glDisableVertexAttribArray(0)
-        GLES20.glDisableVertexAttribArray(1)
+        GLES20.glDisableVertexAttribArray(positionHandle)
+        GLES20.glDisableVertexAttribArray(texCoordHandle)
     }
 
-    private fun updateFrame() {
+    fun update() {
         val currentTime = System.currentTimeMillis()
         if (currentTime - frameTime >= frameDuration) {
             currentFrame = (currentFrame + 1) % frameCount
             frameTime = currentTime
         }
-    }
-
-    fun update() {
-        updateFrame()
-    }
-
-    fun handleTouch(x: Float, y: Float) {
-        this.x = (x / screenWidth) * 2 - 1
-        this.y = 1 - (y / screenHeight) * 2
-    }
-
-    fun move(joystickX: Float, joystickY: Float) {
-        val normalizedX = joystickX / 150f // polomer
-        val normalizedY = joystickY / 150f
-
-        x += normalizedX * moveSpeed
-        y -= normalizedY * moveSpeed
-
-        // Limity pohybu v rámci obrazovky
-        x = x.coerceIn(-1.0f, 1.0f)
-        y = y.coerceIn(-1.0f, 1.0f)
-    }
-
-    fun setScreenDimensions(width: Int, height: Int) {
-        screenWidth = width
-        screenHeight = height
     }
 }

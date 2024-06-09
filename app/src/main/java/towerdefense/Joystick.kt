@@ -1,65 +1,58 @@
 package com.example.towerdefense_seminar_bolecek_peter_5zyi24
 
-import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.util.AttributeSet
-import android.view.MotionEvent
-import android.view.View
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.dp
 
-class Joystick @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
-) : View(context, attrs, defStyleAttr) {
+@Composable
+fun Joystick(
+    onDirectionChange: (
+        up: Boolean, down: Boolean, left: Boolean, right: Boolean,
+        upLeft: Boolean, upRight: Boolean, downLeft: Boolean, downRight: Boolean
+    ) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val direction = remember { mutableStateOf(Offset.Zero) }
 
-    private var centerX: Float = 0f
-    private var centerY: Float = 0f
-    private var baseRadius: Float = 150f
-    private var hatRadius: Float = 75f
-    private var joystickX: Float = centerX
-    private var joystickY: Float = centerY
-    private var paint: Paint = Paint()
-
-    init {
-        paint.color = 0xFF00FF00.toInt() // green
-    }
-
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-        canvas.drawCircle(centerX, centerY, baseRadius, paint)
-        canvas.drawCircle(joystickX, joystickY, hatRadius, paint)
-    }
-
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        val relativeX = event.x
-        val relativeY = event.y
-
-        when (event.action) {
-            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
-                joystickX = relativeX
-                joystickY = relativeY
+    Box(
+        modifier = modifier
+            .size(150.dp)
+            .background(Color.Transparent)
+            .pointerInput(Unit) {
+                detectDragGestures { change, dragAmount ->
+                    direction.value = dragAmount
+                    val (x, y) = dragAmount
+                    val up = y < -20
+                    val down = y > 20
+                    val left = x < -20
+                    val right = x > 20
+                    val upLeft = up && left
+                    val upRight = up && right
+                    val downLeft = down && left
+                    val downRight = down && right
+                    onDirectionChange(up, down, left, right, upLeft, upRight, downLeft, downRight)
+                }
             }
-            MotionEvent.ACTION_UP -> {
-                joystickX = centerX
-                joystickY = centerY
-            }
+    ) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            drawCircle(Color.Green, radius = size.minDimension / 2)
+            val (x, y) = direction.value
+            drawCircle(
+                Color.Red,
+                radius = size.minDimension / 4,
+                center = Offset(size.width / 2 + x, size.height / 2 + y)
+            )
         }
-        invalidate()
-        return true
-    }
-
-    fun setCenter(centerX: Float, centerY: Float) {
-        this.centerX = centerX
-        this.centerY = centerY
-        joystickX = centerX
-        joystickY = centerY
-        invalidate()
-    }
-
-    fun setRadius(baseRadius: Float, hatRadius: Float) {
-        this.baseRadius = baseRadius
-        this.hatRadius = hatRadius
-        invalidate()
     }
 }
