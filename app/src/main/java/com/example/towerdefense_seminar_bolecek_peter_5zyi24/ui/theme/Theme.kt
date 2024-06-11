@@ -17,7 +17,6 @@ private val LightColorScheme = lightColorScheme(
     primary = Color(0xFF6200EE),
     primaryContainer = Color(0xFF3700B3),
     secondary = Color(0xFF03DAC6)
-    // Add other colors as needed
 )
 
 @Composable

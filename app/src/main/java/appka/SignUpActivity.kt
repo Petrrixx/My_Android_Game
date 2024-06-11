@@ -5,7 +5,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -24,7 +26,6 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
-import com.example.towerdefense_seminar_bolecek_peter_5zyi24.data.AppDatabase
 import com.example.towerdefense_seminar_bolecek_peter_5zyi24.data.entities.AppUser
 import com.example.towerdefense_seminar_bolecek_peter_5zyi24.ui.theme.TowerDefenseSeminarTheme
 import kotlinx.coroutines.launch
@@ -36,7 +37,7 @@ class SignUpActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        db = AppDatabase.getDatabase(this)
+        db = AppDatabase.getDatabase(context = this)
 
         window?.decorView?.post {
             WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -50,7 +51,7 @@ class SignUpActivity : ComponentActivity() {
             TowerDefenseSeminarTheme {
                 SignUpScreen { username, password ->
                     lifecycleScope.launch {
-                        db.appUserDao().insert(AppUser(username, password))
+                        db.appUserDao().insert(AppUser(username = username, password = password, isAdmin = false))
                         navigateToLogin()
                     }
                 }
@@ -60,10 +61,11 @@ class SignUpActivity : ComponentActivity() {
 
     private fun navigateToLogin() {
         val context = this
-        context.startActivity(Intent(context, LoginActivity::class.java))
+        startActivity(Intent(context, LoginActivity::class.java))
         finish()
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -84,24 +86,28 @@ fun SignUpScreen(onSignUpClick: (String, String) -> Unit) {
         TextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Username", style = MaterialTheme.typography.bodyLarge, color = colorResource(id = R.color.light_blue)) },
-            modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.DarkGray,
+            label = { Text("Username", color = colorResource(id = R.color.light_blue)) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(2.dp, colorResource(id = R.color.light_blue), RoundedCornerShape(4.dp)),
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = colorResource(id = R.color.light_blue),
+                unfocusedTextColor = colorResource(id = R.color.light_blue),
+                focusedContainerColor = Color.DarkGray,
+                unfocusedContainerColor = Color.DarkGray,
+                disabledContainerColor = Color.DarkGray,
                 cursorColor = colorResource(id = R.color.light_blue),
-                focusedLabelColor = colorResource(id = R.color.light_blue),
-                unfocusedLabelColor = colorResource(id = R.color.light_blue),
                 focusedIndicatorColor = colorResource(id = R.color.light_blue),
                 unfocusedIndicatorColor = colorResource(id = R.color.light_blue),
-                focusedTextColor = colorResource(id = R.color.light_blue),
-                unfocusedTextColor = colorResource(id = R.color.light_blue)
+                focusedLabelColor = colorResource(id = R.color.light_blue),
+                unfocusedLabelColor = colorResource(id = R.color.light_blue),
             )
         )
         Spacer(modifier = Modifier.height(16.dp))
         TextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password", style = MaterialTheme.typography.bodyLarge, color = colorResource(id = R.color.light_blue)) },
+            label = { Text("Password", color = colorResource(id = R.color.light_blue)) },
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
                 val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
@@ -109,23 +115,27 @@ fun SignUpScreen(onSignUpClick: (String, String) -> Unit) {
                     Icon(imageVector = image, contentDescription = null, tint = colorResource(id = R.color.light_blue))
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.DarkGray,
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(2.dp, colorResource(id = R.color.light_blue), RoundedCornerShape(4.dp)),
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = colorResource(id = R.color.light_blue),
+                unfocusedTextColor = colorResource(id = R.color.light_blue),
+                focusedContainerColor = Color.DarkGray,
+                unfocusedContainerColor = Color.DarkGray,
+                disabledContainerColor = Color.DarkGray,
                 cursorColor = colorResource(id = R.color.light_blue),
-                focusedLabelColor = colorResource(id = R.color.light_blue),
-                unfocusedLabelColor = colorResource(id = R.color.light_blue),
                 focusedIndicatorColor = colorResource(id = R.color.light_blue),
                 unfocusedIndicatorColor = colorResource(id = R.color.light_blue),
-                focusedTextColor = colorResource(id = R.color.light_blue),
-                unfocusedTextColor = colorResource(id = R.color.light_blue)
+                focusedLabelColor = colorResource(id = R.color.light_blue),
+                unfocusedLabelColor = colorResource(id = R.color.light_blue),
             )
         )
         Spacer(modifier = Modifier.height(16.dp))
         TextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
-            label = { Text("Confirm Password", style = MaterialTheme.typography.bodyLarge, color = colorResource(id = R.color.light_blue)) },
+            label = { Text("Confirm Password", color = colorResource(id = R.color.light_blue)) },
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
                 val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
@@ -133,16 +143,20 @@ fun SignUpScreen(onSignUpClick: (String, String) -> Unit) {
                     Icon(imageVector = image, contentDescription = null, tint = colorResource(id = R.color.light_blue))
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.DarkGray,
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(2.dp, colorResource(id = R.color.light_blue), RoundedCornerShape(4.dp)),
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = colorResource(id = R.color.light_blue),
+                unfocusedTextColor = colorResource(id = R.color.light_blue),
+                focusedContainerColor = Color.DarkGray,
+                unfocusedContainerColor = Color.DarkGray,
+                disabledContainerColor = Color.DarkGray,
                 cursorColor = colorResource(id = R.color.light_blue),
-                focusedLabelColor = colorResource(id = R.color.light_blue),
-                unfocusedLabelColor = colorResource(id = R.color.light_blue),
                 focusedIndicatorColor = colorResource(id = R.color.light_blue),
                 unfocusedIndicatorColor = colorResource(id = R.color.light_blue),
-                focusedTextColor = colorResource(id = R.color.light_blue),
-                unfocusedTextColor = colorResource(id = R.color.light_blue)
+                focusedLabelColor = colorResource(id = R.color.light_blue),
+                unfocusedLabelColor = colorResource(id = R.color.light_blue),
             )
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -155,7 +169,7 @@ fun SignUpScreen(onSignUpClick: (String, String) -> Unit) {
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.light_blue))
         ) {
-            Text("Sign Up", color = Color.Black, style = MaterialTheme.typography.bodyLarge)
+            Text("Sign Up", color = Color.Black)
         }
     }
 }
