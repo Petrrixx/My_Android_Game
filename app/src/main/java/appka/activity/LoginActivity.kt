@@ -11,12 +11,11 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
 import androidx.activity.ComponentActivity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -25,40 +24,41 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.room.Room
-import com.example.towerdefense_seminar_bolecek_peter_5zyi24.AppDatabase
-import com.example.towerdefense_seminar_bolecek_peter_5zyi24.MainActivity
-import com.example.towerdefense_seminar_bolecek_peter_5zyi24.R
-import com.example.towerdefense_seminar_bolecek_peter_5zyi24.SignUpActivity
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.compose.rememberNavController
+import appka.viewmodels.factory.UserViewModelFactory
+import appka.misc.AppDatabase
 import com.example.towerdefense_seminar_bolecek_peter_5zyi24.ui.theme.TowerDefenseSeminarTheme
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 class LoginActivity : ComponentActivity() {
-    private lateinit var db: AppDatabase
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        db = AppDatabase.getDatabase(context = this)
-
-        window?.decorView?.post {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
-            WindowInsetsControllerCompat(window, window.decorView).apply {
-                hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
-                systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            }
-        }
-
+        val db = AppDatabase.getDatabase(this)
+        SystemUIHelper.hideSystemUI(this)
         setContent {
             TowerDefenseSeminarTheme {
-                var showSnackbar by rememberSaveable { mutableStateOf(false) }
-                var snackbarMessage by rememberSaveable { mutableStateOf("") }
+                val userViewModel: UserViewModel by viewModels {
+                    UserViewModelFactory(db.appUserDao())
+                }
+
+                var showSnackbar by remember { mutableStateOf(false) }
+                var snackbarMessage by remember { mutableStateOf("") }
                 val snackbarHostState = remember { SnackbarHostState() }
+
+                LaunchedEffect(showSnackbar) {
+                    if (showSnackbar) {
+                        snackbarHostState.showSnackbar(snackbarMessage)
+                        showSnackbar = false
+                    }
+                }
 
                 LoginScreen(
                     onLoginClick = { username, password ->
+                        userViewModel.getUser(username, password)
                         lifecycleScope.launch {
-                            val user = db.appUserDao().getUser(username, password)
+                            val user = userViewModel.user.value
                             if (user != null) {
                                 navigateToMain(user.isAdmin)
                             } else {
@@ -84,8 +84,6 @@ class LoginActivity : ComponentActivity() {
         finish()
     }
 }
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -146,9 +144,14 @@ fun LoginScreen(
                 label = { Text("Password", color = colorResource(id = R.color.light_blue)) },
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
-                    val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                    val image =
+                        if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(imageVector = image, contentDescription = null, tint = colorResource(id = R.color.light_blue))
+                        Icon(
+                            imageVector = image,
+                            contentDescription = null,
+                            tint = colorResource(id = R.color.light_blue)
+                        )
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
