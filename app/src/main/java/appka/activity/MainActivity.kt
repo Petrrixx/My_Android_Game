@@ -88,7 +88,6 @@ class MainActivity : ComponentActivity() {
                                     "stats" -> navController.navigate("addStatsItem")
                                     "games" -> navController.navigate("addGameItem")
                                     "guides" -> navController.navigate("addGuideItem")
-                                    else -> {}
                                 }
                             }) {
                                 Icon(Icons.Default.Add, contentDescription = "Add Item")
@@ -199,7 +198,6 @@ class MainActivity : ComponentActivity() {
                                         }
                                     )
                                 }
-
                                 composable("addNewsItem") {
                                     AddNewsItemScreen(onAdd = { newsItem ->
                                         scope.launch {
@@ -248,6 +246,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 
 
 @Composable
@@ -620,11 +619,11 @@ fun StatsScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        if (isAdmin) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            if (isAdmin) {
                 IconButton(onClick = { isAdding = !isAdding }) {
                     Icon(
                         if (isAdding) Icons.Default.Remove else Icons.Default.Add,
@@ -632,95 +631,95 @@ fun StatsScreen(
                         tint = colorResource(id = R.color.light_blue)
                     )
                 }
-                IconButton(onClick = { onRefreshStatsItems() }) {
-                    Icon(
-                        Icons.Default.Refresh,
-                        contentDescription = "Refresh Stats Items",
-                        tint = colorResource(id = R.color.light_blue)
-                    )
-                }
+            }
+            IconButton(onClick = { onRefreshStatsItems() }) {
+                Icon(
+                    Icons.Default.Refresh,
+                    contentDescription = "Refresh Stats Items",
+                    tint = colorResource(id = R.color.light_blue)
+                )
+            }
+        }
+
+        if (isAdmin && isAdding) {
+            TextField(
+                value = gameName,
+                onValueChange = { gameName = it },
+                label = { Text("Game Name", color = colorResource(id = R.color.light_blue)) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = colorResource(id = R.color.light_blue),
+                    unfocusedTextColor = colorResource(id = R.color.light_blue),
+                    focusedContainerColor = Color.DarkGray,
+                    unfocusedContainerColor = Color.DarkGray,
+                    disabledContainerColor = Color.DarkGray,
+                    cursorColor = colorResource(id = R.color.light_blue),
+                    focusedIndicatorColor = colorResource(id = R.color.light_blue),
+                    unfocusedIndicatorColor = colorResource(id = R.color.light_blue),
+                    focusedLabelColor = colorResource(id = R.color.light_blue),
+                    unfocusedLabelColor = colorResource(id = R.color.light_blue),
+                )
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            TextField(
+                value = wins,
+                onValueChange = { wins = it },
+                label = { Text("Wins", color = colorResource(id = R.color.light_blue)) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = colorResource(id = R.color.light_blue),
+                    unfocusedTextColor = colorResource(id = R.color.light_blue),
+                    focusedContainerColor = Color.DarkGray,
+                    unfocusedContainerColor = Color.DarkGray,
+                    disabledContainerColor = Color.DarkGray,
+                    cursorColor = colorResource(id = R.color.light_blue),
+                    focusedIndicatorColor = colorResource(id = R.color.light_blue),
+                    unfocusedIndicatorColor = colorResource(id = R.color.light_blue),
+                    focusedLabelColor = colorResource(id = R.color.light_blue),
+                    unfocusedLabelColor = colorResource(id = R.color.light_blue),
+                )
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            TextField(
+                value = losses,
+                onValueChange = { losses = it },
+                label = { Text("Losses", color = colorResource(id = R.color.light_blue)) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = colorResource(id = R.color.light_blue),
+                    unfocusedTextColor = colorResource(id = R.color.light_blue),
+                    focusedContainerColor = Color.DarkGray,
+                    unfocusedContainerColor = Color.DarkGray,
+                    disabledContainerColor = Color.DarkGray,
+                    cursorColor = colorResource(id = R.color.light_blue),
+                    focusedIndicatorColor = colorResource(id = R.color.light_blue),
+                    unfocusedIndicatorColor = colorResource(id = R.color.light_blue),
+                    focusedLabelColor = colorResource(id = R.color.light_blue),
+                    unfocusedLabelColor = colorResource(id = R.color.light_blue),
+                )
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = {
+                    if (gameName.isNotEmpty() && wins.isNotEmpty() && losses.isNotEmpty()) {
+                        val newStatsItem = StatsItem(
+                            gameName = gameName,
+                            wins = wins.toInt(),
+                            losses = losses.toInt()
+                        )
+                        onAddStatsItem(newStatsItem)
+                        gameName = ""
+                        wins = ""
+                        losses = ""
+                        isAdding = false
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.light_blue))
+            ) {
+                Text("Add Stats Item", color = Color.Black)
             }
 
-            if (isAdding) {
-                TextField(
-                    value = gameName,
-                    onValueChange = { gameName = it },
-                    label = { Text("Game Name", color = colorResource(id = R.color.light_blue)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedTextColor = colorResource(id = R.color.light_blue),
-                        unfocusedTextColor = colorResource(id = R.color.light_blue),
-                        focusedContainerColor = Color.DarkGray,
-                        unfocusedContainerColor = Color.DarkGray,
-                        disabledContainerColor = Color.DarkGray,
-                        cursorColor = colorResource(id = R.color.light_blue),
-                        focusedIndicatorColor = colorResource(id = R.color.light_blue),
-                        unfocusedIndicatorColor = colorResource(id = R.color.light_blue),
-                        focusedLabelColor = colorResource(id = R.color.light_blue),
-                        unfocusedLabelColor = colorResource(id = R.color.light_blue),
-                    )
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                TextField(
-                    value = wins,
-                    onValueChange = { wins = it },
-                    label = { Text("Wins", color = colorResource(id = R.color.light_blue)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedTextColor = colorResource(id = R.color.light_blue),
-                        unfocusedTextColor = colorResource(id = R.color.light_blue),
-                        focusedContainerColor = Color.DarkGray,
-                        unfocusedContainerColor = Color.DarkGray,
-                        disabledContainerColor = Color.DarkGray,
-                        cursorColor = colorResource(id = R.color.light_blue),
-                        focusedIndicatorColor = colorResource(id = R.color.light_blue),
-                        unfocusedIndicatorColor = colorResource(id = R.color.light_blue),
-                        focusedLabelColor = colorResource(id = R.color.light_blue),
-                        unfocusedLabelColor = colorResource(id = R.color.light_blue),
-                    )
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                TextField(
-                    value = losses,
-                    onValueChange = { losses = it },
-                    label = { Text("Losses", color = colorResource(id = R.color.light_blue)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedTextColor = colorResource(id = R.color.light_blue),
-                        unfocusedTextColor = colorResource(id = R.color.light_blue),
-                        focusedContainerColor = Color.DarkGray,
-                        unfocusedContainerColor = Color.DarkGray,
-                        disabledContainerColor = Color.DarkGray,
-                        cursorColor = colorResource(id = R.color.light_blue),
-                        focusedIndicatorColor = colorResource(id = R.color.light_blue),
-                        unfocusedIndicatorColor = colorResource(id = R.color.light_blue),
-                        focusedLabelColor = colorResource(id = R.color.light_blue),
-                        unfocusedLabelColor = colorResource(id = R.color.light_blue),
-                    )
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Button(
-                    onClick = {
-                        if (gameName.isNotEmpty() && wins.isNotEmpty() && losses.isNotEmpty()) {
-                            val newStatsItem = StatsItem(
-                                gameName = gameName,
-                                wins = wins.toInt(),
-                                losses = losses.toInt()
-                            )
-                            onAddStatsItem(newStatsItem)
-                            gameName = ""
-                            wins = ""
-                            losses = ""
-                            isAdding = false
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.light_blue))
-                ) {
-                    Text("Add Stats Item", color = Color.Black)
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-            }
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         LazyColumn {
@@ -730,6 +729,7 @@ fun StatsScreen(
         }
     }
 }
+
 
 @Composable
 fun StatsItemView(statsItem: StatsItem) {
@@ -764,11 +764,11 @@ fun GamesScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        if (isAdmin) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            if (isAdmin) {
                 IconButton(onClick = { isAdding = !isAdding }) {
                     Icon(
                         if (isAdding) Icons.Default.Remove else Icons.Default.Add,
@@ -776,74 +776,74 @@ fun GamesScreen(
                         tint = colorResource(id = R.color.light_blue)
                     )
                 }
-                IconButton(onClick = { onRefreshGameItems() }) {
-                    Icon(
-                        Icons.Default.Refresh,
-                        contentDescription = "Refresh Game Items",
-                        tint = colorResource(id = R.color.light_blue)
-                    )
-                }
+            }
+            IconButton(onClick = { onRefreshGameItems() }) {
+                Icon(
+                    Icons.Default.Refresh,
+                    contentDescription = "Refresh Game Items",
+                    tint = colorResource(id = R.color.light_blue)
+                )
+            }
+        }
+
+        if (isAdmin && isAdding) {
+            TextField(
+                value = gameName,
+                onValueChange = { gameName = it },
+                label = { Text("Game Name", color = colorResource(id = R.color.light_blue)) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = colorResource(id = R.color.light_blue),
+                    unfocusedTextColor = colorResource(id = R.color.light_blue),
+                    focusedContainerColor = Color.DarkGray,
+                    unfocusedContainerColor = Color.DarkGray,
+                    disabledContainerColor = Color.DarkGray,
+                    cursorColor = colorResource(id = R.color.light_blue),
+                    focusedIndicatorColor = colorResource(id = R.color.light_blue),
+                    unfocusedIndicatorColor = colorResource(id = R.color.light_blue),
+                    focusedLabelColor = colorResource(id = R.color.light_blue),
+                    unfocusedLabelColor = colorResource(id = R.color.light_blue),
+                )
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            TextField(
+                value = desc,
+                onValueChange = { desc = it },
+                label = { Text("Description", color = colorResource(id = R.color.light_blue)) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = colorResource(id = R.color.light_blue),
+                    unfocusedTextColor = colorResource(id = R.color.light_blue),
+                    focusedContainerColor = Color.DarkGray,
+                    unfocusedContainerColor = Color.DarkGray,
+                    disabledContainerColor = Color.DarkGray,
+                    cursorColor = colorResource(id = R.color.light_blue),
+                    focusedIndicatorColor = colorResource(id = R.color.light_blue),
+                    unfocusedIndicatorColor = colorResource(id = R.color.light_blue),
+                    focusedLabelColor = colorResource(id = R.color.light_blue),
+                    unfocusedLabelColor = colorResource(id = R.color.light_blue),
+                )
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = {
+                    if (gameName.isNotEmpty() && desc.isNotEmpty()) {
+                        val newGameItem = Game(
+                            name = gameName,
+                            desc = desc
+                        )
+                        onAddGameItem(newGameItem)
+                        gameName = ""
+                        desc = ""
+                        isAdding = false
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.light_blue))
+            ) {
+                Text("Add Game Item", color = Color.Black)
             }
 
-            if (isAdding) {
-                TextField(
-                    value = gameName,
-                    onValueChange = { gameName = it },
-                    label = { Text("Game Name", color = colorResource(id = R.color.light_blue)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedTextColor = colorResource(id = R.color.light_blue),
-                        unfocusedTextColor = colorResource(id = R.color.light_blue),
-                        focusedContainerColor = Color.DarkGray,
-                        unfocusedContainerColor = Color.DarkGray,
-                        disabledContainerColor = Color.DarkGray,
-                        cursorColor = colorResource(id = R.color.light_blue),
-                        focusedIndicatorColor = colorResource(id = R.color.light_blue),
-                        unfocusedIndicatorColor = colorResource(id = R.color.light_blue),
-                        focusedLabelColor = colorResource(id = R.color.light_blue),
-                        unfocusedLabelColor = colorResource(id = R.color.light_blue),
-                    )
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                TextField(
-                    value = desc,
-                    onValueChange = { desc = it },
-                    label = { Text("Description", color = colorResource(id = R.color.light_blue)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedTextColor = colorResource(id = R.color.light_blue),
-                        unfocusedTextColor = colorResource(id = R.color.light_blue),
-                        focusedContainerColor = Color.DarkGray,
-                        unfocusedContainerColor = Color.DarkGray,
-                        disabledContainerColor = Color.DarkGray,
-                        cursorColor = colorResource(id = R.color.light_blue),
-                        focusedIndicatorColor = colorResource(id = R.color.light_blue),
-                        unfocusedIndicatorColor = colorResource(id = R.color.light_blue),
-                        focusedLabelColor = colorResource(id = R.color.light_blue),
-                        unfocusedLabelColor = colorResource(id = R.color.light_blue),
-                    )
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Button(
-                    onClick = {
-                        if (gameName.isNotEmpty() && desc.isNotEmpty()) {
-                            val newGameItem = Game(
-                                name = gameName,
-                                desc = desc
-                            )
-                            onAddGameItem(newGameItem)
-                            gameName = ""
-                            desc = ""
-                            isAdding = false
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.light_blue))
-                ) {
-                    Text("Add Game Item", color = Color.Black)
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-            }
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         LazyColumn {
@@ -853,6 +853,7 @@ fun GamesScreen(
         }
     }
 }
+
 
 @Composable
 fun GameItemView(gameItem: Game) {
@@ -885,11 +886,11 @@ fun GuidesScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        if (isAdmin) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            if (isAdmin) {
                 IconButton(onClick = { isAdding = !isAdding }) {
                     Icon(
                         if (isAdding) Icons.Default.Remove else Icons.Default.Add,
@@ -897,74 +898,74 @@ fun GuidesScreen(
                         tint = colorResource(id = R.color.light_blue)
                     )
                 }
-                IconButton(onClick = { onRefreshGuideItems() }) {
-                    Icon(
-                        Icons.Default.Refresh,
-                        contentDescription = "Refresh Guide Items",
-                        tint = colorResource(id = R.color.light_blue)
-                    )
-                }
+            }
+            IconButton(onClick = { onRefreshGuideItems() }) {
+                Icon(
+                    Icons.Default.Refresh,
+                    contentDescription = "Refresh Guide Items",
+                    tint = colorResource(id = R.color.light_blue)
+                )
+            }
+        }
+
+        if (isAdmin && isAdding) {
+            TextField(
+                value = title,
+                onValueChange = { title = it },
+                label = { Text("Title", color = colorResource(id = R.color.light_blue)) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = colorResource(id = R.color.light_blue),
+                    unfocusedTextColor = colorResource(id = R.color.light_blue),
+                    focusedContainerColor = Color.DarkGray,
+                    unfocusedContainerColor = Color.DarkGray,
+                    disabledContainerColor = Color.DarkGray,
+                    cursorColor = colorResource(id = R.color.light_blue),
+                    focusedIndicatorColor = colorResource(id = R.color.light_blue),
+                    unfocusedIndicatorColor = colorResource(id = R.color.light_blue),
+                    focusedLabelColor = colorResource(id = R.color.light_blue),
+                    unfocusedLabelColor = colorResource(id = R.color.light_blue),
+                )
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            TextField(
+                value = link,
+                onValueChange = { link = it },
+                label = { Text("Link", color = colorResource(id = R.color.light_blue)) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = colorResource(id = R.color.light_blue),
+                    unfocusedTextColor = colorResource(id = R.color.light_blue),
+                    focusedContainerColor = Color.DarkGray,
+                    unfocusedContainerColor = Color.DarkGray,
+                    disabledContainerColor = Color.DarkGray,
+                    cursorColor = colorResource(id = R.color.light_blue),
+                    focusedIndicatorColor = colorResource(id = R.color.light_blue),
+                    unfocusedIndicatorColor = colorResource(id = R.color.light_blue),
+                    focusedLabelColor = colorResource(id = R.color.light_blue),
+                    unfocusedLabelColor = colorResource(id = R.color.light_blue),
+                )
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = {
+                    if (title.isNotEmpty() && link.isNotEmpty()) {
+                        val newGuideItem = Guide(
+                            title = title,
+                            link = link
+                        )
+                        onAddGuideItem(newGuideItem)
+                        title = ""
+                        link = ""
+                        isAdding = false
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.light_blue))
+            ) {
+                Text("Add Guide Item", color = Color.Black)
             }
 
-            if (isAdding) {
-                TextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    label = { Text("Title", color = colorResource(id = R.color.light_blue)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedTextColor = colorResource(id = R.color.light_blue),
-                        unfocusedTextColor = colorResource(id = R.color.light_blue),
-                        focusedContainerColor = Color.DarkGray,
-                        unfocusedContainerColor = Color.DarkGray,
-                        disabledContainerColor = Color.DarkGray,
-                        cursorColor = colorResource(id = R.color.light_blue),
-                        focusedIndicatorColor = colorResource(id = R.color.light_blue),
-                        unfocusedIndicatorColor = colorResource(id = R.color.light_blue),
-                        focusedLabelColor = colorResource(id = R.color.light_blue),
-                        unfocusedLabelColor = colorResource(id = R.color.light_blue),
-                    )
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                TextField(
-                    value = link,
-                    onValueChange = { link = it },
-                    label = { Text("Link", color = colorResource(id = R.color.light_blue)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedTextColor = colorResource(id = R.color.light_blue),
-                        unfocusedTextColor = colorResource(id = R.color.light_blue),
-                        focusedContainerColor = Color.DarkGray,
-                        unfocusedContainerColor = Color.DarkGray,
-                        disabledContainerColor = Color.DarkGray,
-                        cursorColor = colorResource(id = R.color.light_blue),
-                        focusedIndicatorColor = colorResource(id = R.color.light_blue),
-                        unfocusedIndicatorColor = colorResource(id = R.color.light_blue),
-                        focusedLabelColor = colorResource(id = R.color.light_blue),
-                        unfocusedLabelColor = colorResource(id = R.color.light_blue),
-                    )
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Button(
-                    onClick = {
-                        if (title.isNotEmpty() && link.isNotEmpty()) {
-                            val newGuideItem = Guide(
-                                title = title,
-                                link = link
-                            )
-                            onAddGuideItem(newGuideItem)
-                            title = ""
-                            link = ""
-                            isAdding = false
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.light_blue))
-                ) {
-                    Text("Add Guide Item", color = Color.Black)
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-            }
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         LazyColumn {
